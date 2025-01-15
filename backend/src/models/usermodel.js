@@ -17,6 +17,18 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 6,
+    },
+    gpa: {
+        type: Number,
+        required: true,
+    },
+    companies: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Company"
+    }],
+    admin: {
+        type: Boolean,
+        default: false
     }
 })
 

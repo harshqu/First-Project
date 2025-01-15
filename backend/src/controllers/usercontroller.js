@@ -3,7 +3,7 @@ import sendToken from "../utils/jwtToken.js";
 
 const registerUser = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, gpa,admin } = req.body;
         
         const existingUser = await User.findOne({ email });
 
@@ -14,7 +14,9 @@ const registerUser = async (req, res) => {
         const user = await User.create({
             username,
             email,
-            password
+            password,
+            gpa,
+            admin,
         })
 
         sendToken(user,200,res)
@@ -24,5 +26,34 @@ const registerUser = async (req, res) => {
     }
 };
 
+const loginUser = async(req,res) => {
+    try {
+        const {email,password} = req.body;
+        const user = await User.findOne({email:email});
+        if(!user) {
+            return res.status(400).json({message: "Email not found" });
+        }
 
-export {registerUser}
+        if(user.password === password) {
+            sendToken(user,200,res)
+        }
+    } catch (error) {
+        console.log('Error:',error)
+    }
+}
+
+const logout = async(req,res) => {
+    try {
+        res.cookie('token',null,{
+            expires: new Date(Date.now()),
+            httpOnly:true,
+        });
+
+        return res.status(200).json({message:"logged out successfully"});
+    } catch (error) {
+        console.log('Error in logging out',error);
+    }
+}
+
+
+export {registerUser,loginUser,logout}
