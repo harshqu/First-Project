@@ -5,6 +5,7 @@ import SignUpForm from './components/sign-up'
 import Dashboard from './components/dashboard'
 import { AuthProvider, useAuth } from './components/context/AuthProvider'
 import { Toaster } from "@/components/ui/toaster"
+import Profile from './components/profilepage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -39,6 +40,12 @@ function AppRoutes() {
         <PublicRoute>
           <SignUpForm />
         </PublicRoute>
+      } />
+
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <Profile/>
+        </ProtectedRoute>
       } />
     </Routes>
   )

@@ -52,7 +52,7 @@ const getAppliedCompanies = async(req,res) => {
         const userId = req.user._id;
         const user = await User.findById(userId);
         const companies = user.companies;
-
+        console.log(companies)
         return res.status(200).json(companies);
     } catch (error) {
         console.log('Error in getting applied companies',error);
@@ -76,5 +76,21 @@ const addCompanies = async(req,res) => {
     }
 }
 
+const deleteCompanies = async(req,res) => {
+    try {
+        const {companyIds} = req.body;
+        const companies_toDelete = await Company.deleteMany({
+            name: {$in:companyIds}
+        })
 
-export {fetchCompanyData,apply,getAppliedCompanies,addCompanies}
+        return res.status(200).json({
+            message:"Deleted Successfully"
+        })
+
+    } catch (error) {
+        console.log("Error in deletion",error);
+    }
+}
+
+
+export {fetchCompanyData,apply,getAppliedCompanies,addCompanies,deleteCompanies}

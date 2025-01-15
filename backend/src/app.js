@@ -1,7 +1,7 @@
 import express from 'express'
-import { loginUser, logout, registerUser } from './controllers/usercontroller.js';
+import { getUserDetails, loginUser, logout, registerUser } from './controllers/usercontroller.js';
 import { isAuthenticated,isAdmin } from './middleware/auth.js';
-import { addCompanies,apply,getAppliedCompanies,fetchCompanyData } from './controllers/dashboardcontroller.js';
+import { addCompanies,apply,getAppliedCompanies,fetchCompanyData, deleteCompanies } from './controllers/dashboardcontroller.js';
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 
@@ -20,9 +20,11 @@ app.use(cors({
 app.post('/signup',registerUser);
 app.post('/login',loginUser);
 app.post('/logout',isAuthenticated,logout);
+app.get('/getUserDetails',isAuthenticated,getUserDetails);
 
 app.post('/addCompanies',isAuthenticated,isAdmin,addCompanies);
 app.get('/fetchData',isAuthenticated,fetchCompanyData);
 app.get('/appliedData',isAuthenticated,getAppliedCompanies);
+app.delete('/deletecompanies',isAuthenticated,isAdmin,deleteCompanies)
 
 export {app};
