@@ -29,7 +29,15 @@ const userSchema = new mongoose.Schema({
     admin: {
         type: Boolean,
         default: false
-    }
+    },
+    approved: {
+        type: Boolean,
+        default: false
+    },
+    approvalList: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }]
 })
 
 userSchema.methods.getJWTToken = function () {

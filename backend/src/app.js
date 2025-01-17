@@ -1,5 +1,5 @@
 import express from 'express'
-import { getUserDetails, loginUser, logout, registerUser } from './controllers/usercontroller.js';
+import { approveProfiles, getAllUserDetails, getUserDetails, loginUser, logout, registerUser } from './controllers/usercontroller.js';
 import { isAuthenticated,isAdmin } from './middleware/auth.js';
 import { addCompanies,apply,getAppliedCompanies,fetchCompanyData, deleteCompanies } from './controllers/dashboardcontroller.js';
 import cors from 'cors'
@@ -21,10 +21,14 @@ app.post('/signup',registerUser);
 app.post('/login',loginUser);
 app.post('/logout',isAuthenticated,logout);
 app.get('/getUserDetails',isAuthenticated,getUserDetails);
+app.get('/getAllUsers',isAuthenticated,isAdmin,getAllUserDetails);
+app.post('/approveStudent',isAuthenticated,isAdmin,approveProfiles);
 
 app.post('/addCompanies',isAuthenticated,isAdmin,addCompanies);
 app.get('/fetchData',isAuthenticated,fetchCompanyData);
 app.get('/appliedData',isAuthenticated,getAppliedCompanies);
-app.delete('/deletecompanies',isAuthenticated,isAdmin,deleteCompanies)
+app.delete('/deletecompanies',isAuthenticated,isAdmin,deleteCompanies);
+app.post('/apply',isAuthenticated,apply);
+app.get('/companiesData',isAuthenticated,isAdmin,fetchCompanyData);
 
 export {app};

@@ -21,7 +21,11 @@ const company = new mongoose.Schema ({
     criteria: {
         type: Number,// gpa
         required: true 
-    }
+    },
+    applicants: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }]
 });
 
 const Company = mongoose.model("Company",company);

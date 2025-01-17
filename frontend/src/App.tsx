@@ -5,7 +5,11 @@ import SignUpForm from './components/sign-up'
 import Dashboard from './components/dashboard'
 import { AuthProvider, useAuth } from './components/context/AuthProvider'
 import { Toaster } from "@/components/ui/toaster"
-import Profile from './components/profilepage'
+import { Layout } from './Layout'
+import AdminDashboard from './components/admin-profilePage'
+import ProfilePage from './components/main_landing'
+import Cookies from 'js-cookie'
+import Settings from './components/settings'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -17,8 +21,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  const admin = Cookies.get('admin');
+  if(admin==='true') {
+    return <Navigate to='/admin' replace/>;
+  }
+
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/profile" replace />;
   }
   return children;
 }
@@ -26,11 +35,31 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={
-        <ProtectedRoute>
-          <Dashboard />
-        </ProtectedRoute>
-      } />
+      <Route element={<Layout />} >
+        <Route path="/" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <ProfilePage/>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/admin" element={
+          <ProtectedRoute>
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        } />
+
+      </Route>
       <Route path="/login" element={
         <PublicRoute>
           <SignInForm />
@@ -40,12 +69,6 @@ function AppRoutes() {
         <PublicRoute>
           <SignUpForm />
         </PublicRoute>
-      } />
-
-      <Route path="/profile" element={
-        <ProtectedRoute>
-          <Profile/>
-        </ProtectedRoute>
       } />
     </Routes>
   )

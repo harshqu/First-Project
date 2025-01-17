@@ -28,6 +28,8 @@ import AdminCompanyAdd from './addCompany'
 import { Checkbox } from './ui/checkbox'
 import { useToast } from '@/hooks/use-toast'
 import { motion } from 'framer-motion'
+import { Sheet, SheetContent } from "@/components/ui/sheet"
+import CompanyDrawer from './company-drawer'
 
 interface Company {
   id: string
@@ -47,6 +49,7 @@ export default function Dashboard() {
   const admin = Cookies.get('admin');
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>([])
   const {toast} = useToast();
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)
     
   useEffect(() => {
     const fetchCompanies = async() => {
@@ -89,6 +92,7 @@ export default function Dashboard() {
     Cookies.remove('user');
     Cookies.remove('token');
     Cookies.remove('admin');
+    Cookies.remove('approved');
     setUser(null);
   }
 
@@ -117,6 +121,19 @@ export default function Dashboard() {
       setCompanies(companies.filter(company => !selectedCompanies.includes(company.name)))
     } catch (error) {
       console.error('Error deleting companies:', error)
+    }
+  }
+
+  const handleCompanyClick = (company: Company, event: React.MouseEvent) => {
+    // Check if the click target is the checkbox
+    if ((event.target as HTMLElement).closest('.checkbox-cell')) {
+      // If it's the checkbox, just handle the selection
+      handleSelectCompany(company.name);
+    } else {
+      // If it's not the checkbox and the company is not selected, open the sheet
+      if (!selectedCompanies.includes(company.name)) {
+        setSelectedCompany(company);
+      }
     }
   }
 
@@ -199,16 +216,18 @@ export default function Dashboard() {
                   <TableHead>Job Role</TableHead>
                   <TableHead>Salary</TableHead>
                   <TableHead>Description</TableHead>
-                  <TableHead>GPA Criteria</TableHead>
+                  <TableHead>GPA</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sortedCompanies.map((company) => (
-                  <TableRow key={company.id}>
+                  <TableRow key={company.id} className="cursor-pointer" onClick={(event) => handleCompanyClick(company, event)}>
                     {admin !== 'false' && (
-                      <TableCell>
+                      <TableCell className="checkbox-cell">
                         <Checkbox
+                          checked={selectedCompanies.includes(company.name)}
                           onCheckedChange={() => handleSelectCompany(company.name)}
+                          onClick={(e) => e.stopPropagation()}
                         />
                       </TableCell>
                     )}
@@ -223,7 +242,13 @@ export default function Dashboard() {
             </Table>
           </div>
         </motion.div>
+      <Sheet open={!!selectedCompany} onOpenChange={() => setSelectedCompany(null)}>
+        <SheetContent side="right" className="w-[400px] sm:w-[540px] bg-transparent border-none">
+          {selectedCompany && <CompanyDrawer company={selectedCompany} />}
+        </SheetContent>
+      </Sheet>
       </div>
     </div>
   )
 }
+

@@ -37,8 +37,10 @@ const apply = async (req, res) => {
             return res.status(400).json({ message: "Already applied to this company" });
         }
 
+        company.applicants.push(user._id);
         user.companies.push(company._id);
         await user.save();
+        await company.save();
 
         return res.status(200).json({ message: "Successfully applied to this company" });
     } catch (error) {
@@ -52,8 +54,12 @@ const getAppliedCompanies = async(req,res) => {
         const userId = req.user._id;
         const user = await User.findById(userId);
         const companies = user.companies;
-        console.log(companies)
-        return res.status(200).json(companies);
+        const companiesData = await Company.find({
+            _id: {
+                $in: companies
+            },
+        }).select('name -_id');
+        return res.status(200).json(companiesData);
     } catch (error) {
         console.log('Error in getting applied companies',error);
     }
@@ -92,5 +98,14 @@ const deleteCompanies = async(req,res) => {
     }
 }
 
+const fetchCompaniesData = async(req,res) => {
+    try {
+        const companies = await Company.find({});
+        return res.status(200).json(companies);
+    } catch (error) {
+        console.log('Error in fetching companies data',error);
+    }
+}
 
-export {fetchCompanyData,apply,getAppliedCompanies,addCompanies,deleteCompanies}
+
+export {fetchCompanyData,apply,getAppliedCompanies,addCompanies,deleteCompanies,fetchCompaniesData}
